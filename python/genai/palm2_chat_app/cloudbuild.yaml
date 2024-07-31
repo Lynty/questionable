@@ -1,13 +1,18 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
+  dir: "python/genai/palm2_chat_app"
   script: |
     docker build -t gcr.io/$PROJECT_ID/palm2-chat-app:${SHORT_SHA} .
   automapSubstitutions: true
-images:
-- 'gcr.io/$PROJECT_ID/palm2-chat-app'
-
-steps:
-- name: 'gcr.io/cloud-builders/gcloud'
+- name: 'gcr.io/cloud-builders/docker'
+  dir: "python/genai/palm2_chat_app"
   script: |
-    gcloud run deploy cloudrunservice --image gcr.io/$PROJECT_ID/palm2-chat-app:${SHORT_SHA} --region us-central1 --platform managed --allow-unauthenticated
+    docker push gcr.io/$PROJECT_ID/palm2-chat-app:${SHORT_SHA}
   automapSubstitutions: true
+- name: 'gcr.io/cloud-builders/gcloud'
+  dir: "python/genai/palm2_chat_app"
+  script: |
+    gcloud run deploy palm2-chat-app --image gcr.io/$PROJECT_ID/palm2-chat-app:${SHORT_SHA} --region us-central1 --platform managed --allow-unauthenticated
+  automapSubstitutions: true
+#images:
+#- 'gcr.io/$PROJECT_ID/palm2-chat-app:${SHORT_SHA}'
